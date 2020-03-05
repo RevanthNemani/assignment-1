@@ -18,7 +18,7 @@
     - [Question 11: Do extra activities help to improve student performance?](#question-11-do-extra-activities-help-to-improve-student-performance)
     - [Question 12: Does internet home access help to improve student performance?](#question-12-does-internet-home-access-help-to-improve-student-performance)
     - [Question 13: What is the distribution of students who succeeded over the levels of free time?](#question-13-what-is-the-distribution-of-students-who-succeeded-over-the-levels-of-free-time)
-    - [Question 14: What is the relationship between age and student result? (Hint: Generate a graph and say if the relationship is proportional or inversional proportional)](#question-14-what-is-the-relationship-between-age-and-student-result-hint-generate-a-graph-and-say-if-the-relationship-is-proportional-or-inversional-proportional)
+    - [Question 14: What is the relationship between age and student result?](#question-14-what-is-the-relationship-between-age-and-student-result)
     - [Question 15: What is the relationship between address and student result?](#question-15-what-is-the-relationship-between-address-and-student-result)
     - [Question 16: What is the relationship between study time and student result?](#question-16-what-is-the-relationship-between-study-time-and-student-result)
     - [Question 17: Does absence affect student performance?](#question-17-does-absence-affect-student-performance)
@@ -159,7 +159,7 @@ R Console Output
 
 **Answer 13:**
 
-### Question 14: What is the relationship between age and student result? (Hint: Generate a graph and say if the relationship is proportional or inversional proportional)
+### Question 14: What is the relationship between age and student result?
 
 **Answer 14:**
 
