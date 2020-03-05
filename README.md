@@ -1,8 +1,5 @@
-# Assignment
-
 # Student Performance Case Study (Clustering/Clasification)
 
-- [Assignment](#assignment)
 - [Student Performance Case Study (Clustering/Clasification)](#student-performance-case-study-clusteringclasification)
   - [Step 1: Identify business problem](#step-1-identify-business-problem)
     - [Question 1: What are the problems that we are trying to solve in this assignment?](#question-1-what-are-the-problems-that-we-are-trying-to-solve-in-this-assignment)
@@ -59,11 +56,11 @@
 
 ### Question 1: What are the problems that we are trying to solve in this assignment?
 
-**Answer 1:**
+**Solution 1:**
 
 ### Question 2: What are the algorithms that could be used to solve each problem?
 
-**Answer 2:**
+**Solution 2:**
 
 ## Step 2: Identify data sources and acquire data
 
@@ -118,87 +115,87 @@ R Console Output
 
 ### Question 3: Find the number of missing data for each feature.
 
-**Answer 3:**
+**Solution 3:**
 
 ### Question 4: What is the best way to deal with missing data (delete, calculate the average or the median, etc.)?
 
-**Answer 4:**
+**Solution 4:**
 
 ### Question 5: Using an outlier detection technique (such as scatter, Z-score, or Box Plot), find if there are any outliers in the data (give these outliers).
 
-**Answer 5:**
+**Solution 5:**
 
 ## Step 4: Perform exploratory analysis
 
 ### Question 6: Discover the relationship between going out and the grades of students (in other words, does, for example, going out so often affect the results of the student?)
 
-**Answer 6:**
+**Solution 6:**
 
 ### Question 7: Is there a relationship between family size and the result of students?
 
-**Answer 7:**
+**Solution 7:**
 
 ### Question 8: Does the quality of the family relationship affect students’ results? Explain your answer.
 
-**Answer 8:**
+**Solution 8:**
 
 ### Question 9: Does the school travel time affect students result? Explain your answer.
 
-**Answer 9:**
+**Solution 9:**
 
 ### Question 10: What type of relationship does exist between the previous failures and students’ results? (in other words, if a student previously failed does this mean he/she will pass?!)
 
-**Answer 10:**
+**Solution 10:**
 
 ### Question 11: Do extra activities help to improve student performance?
 
-**Answer 11:**
+**Solution 11:**
 
 ### Question 12: Does internet home access help to improve student performance?
 
-**Answer 12:**
+**Solution 12:**
 
 ### Question 13: What is the distribution of students who succeeded over the levels of free time?
 
-**Answer 13:**
+**Solution 13:**
 
 ### Question 14: What is the relationship between age and student result?
 
-**Answer 14:**
+**Solution 14:**
 
 ### Question 15: What is the relationship between address and student result?
 
-**Answer 15:**
+**Solution 15:**
 
 ### Question 16: What is the relationship between study time and student result?
 
-**Answer 16:**
+**Solution 16:**
 
 ### Question 17: Does absence affect student performance?
 
-**Answer 17:**
+**Solution 17:**
 
 ### Question 18: Does health affect student performance?
 
-**Answer 18:**
+**Solution 18:**
 
 ### Question 19: Does mother and father education/job affect student result?
 
-**Answer 19:**
+**Solution 19:**
 
 ## Step 5: Generate the model
 
 ### Question 20: Give the useful variables to perform the clustering and classification. Remove the non-useful variables if there are any.
 
-**Answer 20:**
+**Solution 20:**
 
 ### Question 21: Are there any features that we need to add to the dataset? Identify and add these features to the dataset?
 
-**Answer 21:**
+**Solution 21:**
 
 ### Question 22: Is there any data needed to be normalized? What techniques of normalization could be used?
 
-**Answer 22:**
+**Solution 22:**
 
 ## Step 6: Validate the model
 
@@ -208,39 +205,39 @@ R Console Output
 
 ### Question 23: Do the clustering based on these features with k=7. Showcase your results (plot of clusters).
 
-**Answer 23:**
+**Solution 23:**
 
 ### Question 24: Calculate the within-cluster variation.
 
-**Answer 24:**
+**Solution 24:**
 
 > For features: age, address, Fjob, traveltime, studytime, failures, and absences.
 
 ### Question 25: Do the clustering based on these features with k=7. Showcase your results (plot of clusters).
 
-**Answer 25:**
+**Solution 25:**
 
 ### Question 26: Calculate the within-cluster variation.
 
-**Answer 26:**
+**Solution 26:**
 
 > For features: age, address, famsize, Pstatus, Medu, Fedu, Mjob, Fjob,studytime, traveltime ,failures, internet, famrel, freetime, goout,health, absences.
 
 ### Question 27: Do the clustering based on these features with k=7. Showcase your results (plot of clusters).
 
-**Answer 27:**
+**Solution 27:**
 
 ### Question 28: Calculate the within-cluster variation.
 
-**Answer 28:**
+**Solution 28:**
 
 ### Question 29: Is this clustering better or worse than the previous ones? Explain your answer.
 
-**Answer 29:**
+**Solution 29:**
 
 ### Question 30: Find the appropriate number of clusters (k) for the student performance data.
 
-**Answer 30:**
+**Solution 30:**
 
 ### part 2
 
@@ -248,36 +245,36 @@ R Console Output
 
 ### Question 31: Do the classification using KNN algorithm.
 
-**Answer 31:**
+**Solution 31:**
 
 ### Question 32: Assess the performance of the model for different values of K (number of neighbors) using confusion-matrix and accuracy.
 
-**Answer 32:**
+**Solution 32:**
 
 ### Question 33: Find the best value of K.
 
-**Answer 33:**
+**Solution 33:**
 
 ### Question 34: Do the classification using SVM algorithm.
 
-**Answer 34:**
+**Solution 34:**
 
 ### Question 35: Assess the performance of the model using confusion-matrix and accuracy.
 
-**Answer 35:**
+**Solution 35:**
 
 ### Question 36: Compare the performance of SVM to the accuracy of KNN.
 
-**Answer 36:**
+**Solution 36:**
 
 ### part 3
 
 ### Question 37: In order to answer this question, show the distribution of the results for each cluster. Explain the results.
 
-**Answer 37:**
+**Solution 37:**
 
 ## Step 7: Visualize results
 
 ### Question 38: Create graphs to present important results concluded from the previous step. Comment on those graphs.
 
-**Answer 38:**
+**Solution 38:**
