@@ -58,6 +58,10 @@
 
 **Solution 1:**
 
+1. Find out what makes the students performance higher.
+2. Predict students' performance
+3. Increase students' performance
+
 ### Question 2: What are the algorithms that could be used to solve each problem?
 
 **Solution 2:**
@@ -264,8 +268,8 @@ $$
 R Code
 
 ```r
-#Dectecting outlier
-# Using z-scores
+# Detecting outlier
+# Using Z - scores
 data.z.scores <- data %>% mutate(ageZScore = scale(age),
                                  MeduZScore = scale(Medu),
                                  FeduZScore = scale(Fedu),
@@ -320,21 +324,32 @@ data <- data.z.scores[, 1:32]
 R Code:
 
 ```r
-#loading required library for plots
+# Loading required library for plots
 require(ggplot2)
 
-# finding out the relationship between going out and grades by adding a column `successRate`
-result.goout <-
-  data %>%
-  mutate(success = ifelse(G3 >= 10, 1, 0), fail = ifelse(G3 < 10, 1, 0)) %>%
+# finding out the relationship between going out and grade
+result.goout <- data %>%
+  mutate(sdG3 = G3) %>%
   group_by(goout) %>%
-  summarise(success = sum(success), fail = sum(fail)) %>%
-  mutate(successRate = success/(success + fail))
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
 # View result.goout
 View(result.goout)
-# plot result.goout
+
+# Plot of the relation between going out and grade with error bars
 result.goout %>%
-  ggplot(aes(x = goout, y = successRate)) + geom_bar(stat = "identity")
+  ggplot(aes(x = goout, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = goout,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
 ```
 
 Output:
@@ -343,7 +358,7 @@ Output:
 
 ![histogram of relationship between going out and grades](./Images/result.gooutPlot.png)
 
-From the histogram, we can safely say that as students go out more often their success Rate starts to decrease.
+From the histogram, we can safely say that who go out moderately tend to get better grades.
 
 ### Question 7: Is there a relationship between family size and the result of students?
 
@@ -352,31 +367,79 @@ From the histogram, we can safely say that as students go out more often their s
 R Code:
 
 ```r
-# finding out the relationship between family size and grades
-result.famsize <-
-  data %>%
-  mutate(success = ifelse(G3 >= 10, 1, 0), fail = ifelse(G3 < 10, 1, 0)) %>%
+# finding out the relationship between family size and grade
+result.famsize <- data %>%
+  mutate(sdG3 = G3) %>%
   group_by(famsize) %>%
-  summarise(success = sum(success), fail = sum(fail)) %>%
-  mutate(successRate = success/(success + fail))
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
 # View result.famsize
 View(result.famsize)
-# plot result.famsize
+
+# Plot of the relation between family size and grade with error bars
 result.famsize %>%
-  ggplot(aes(x = famsize, y = successRate)) + geom_bar(stat = "identity")
+  ggplot(aes(x = famsize, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = famsize,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  ))
 ```
 
 Output:
 
-![data of relationship between family size and grades](./Images/result.famSize.png)
+![data of relationship between family size and performance](./Images/result.famSize.png)
 
-![histogram of relationship between family size and grades](./Images/result.famSizePlot.png)
+![histogram of relationship between family size and performance](./Images/result.famSizePlot.png)
 
-From the histogram, we can see that a family size of less or equal to 3 has a slightly better success rate.
+From the histogram, we can see that students from family size of less or equal to 3 get better grades than a family size larger than 3.
 
 ### Question 8: Does the quality of the family relationship affect students’ results? Explain your answer.
 
 **Solution 8:**
+
+R Code:
+
+```r
+# finding out the relationship between family relationship quality and grade
+result.famrel <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(famrel) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.famrel
+View(result.famrel)
+
+# Plot of the relation between family relationship quality and grade with error bars
+result.famrel %>%
+  ggplot(aes(x = famrel, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = famrel,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+```
+
+Output:
+
+![data of relationship between family relationship and performance](./Images/result.famrel.png)
+
+![histogram of relationship between family relationship and performance](./Images/result.famrelPlot.png)
+
+We have too few data points on lower family relationship quality. But we can observe that grades increase with higher family relationship quality. This can be clearly seen from the increase in lowest grades with increase in family relationship quality.
+
+A direct relationship exists.
 
 ### Question 9: Does the school travel time affect students result? Explain your answer.
 
@@ -385,31 +448,72 @@ From the histogram, we can see that a family size of less or equal to 3 has a sl
 R Code:
 
 ```r
-# finding out the relationship between family relationship quality and grades
-result.famrel <-
-  data %>%
-  mutate(success = ifelse(G3 >= 10, 1, 0), fail = ifelse(G3 < 10, 1, 0)) %>%
-  group_by(famrel) %>%
-  summarise(success = sum(success), fail = sum(fail)) %>%
-  mutate(successRate = success/(success + fail))
-# View result.famrel
-View(result.famrel)
-# plot result.famrel
-result.famrel %>%
-  ggplot(aes(x = famrel, y = successRate)) + geom_bar(stat = "identity")
+# finding out the relationship between travel time and grade
+result.traveltime <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(traveltime) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.traveltime
+View(result.traveltime)
+
+# Plot of the relation between travel time and grade with error bars
+result.traveltime %>%
+  ggplot(aes(x = traveltime, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = traveltime,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
 ```
 
 Output:
 
-![data of relationship between family relationship and grades](./Images/result.famrel.png)
+![data of relationship between family relationship and performance](./Images/result.traveltime.png)
 
-![histogram of relationship between family relationship and grades](./Images/result.famrelPlot.png)
+![histogram of relationship between family relationship and performance](./Images/result.traveltimePlot.png)
 
-We have too few data points on lower family relationship quality. But we can observe that success rates increase with higher family relationship quality.
+With the increase in travel time, student's grades decrease.
+
+There exists an inverse relationship.
 
 ### Question 10: What type of relationship does exist between the previous failures and students’ results? (in other words, if a student previously failed does this mean he/she will pass?!)
 
 **Solution 10:**
+
+R Code:
+
+```r
+# finding out the relationship between previous failures and success
+result.failures <-
+  data %>%
+  mutate(success = ifelse(G3 >= 10, 1, 0), fail = ifelse(G3 < 10, 1, 0)) %>%
+  group_by(failures) %>%
+  summarise(success = sum(success), fail = sum(fail)) %>%
+  mutate(successRate = success/(success + fail))
+# View result.failures
+View(result.failures)
+# plot result.failures
+result.failures %>%
+  ggplot(aes(x = failures, y = successRate)) + geom_bar(stat = "identity")
+```
+
+Output:
+
+![data of relationship between family relationship and success](./Images/result.failures.png)
+
+![histogram of relationship between family relationship and success](./Images/result.failuresPlot.png)
+
+Yes, the students with previous failures have a strong proportional effect on results.
+In other words, as the number of times a student failed in the past, the more probability of the student failing in future.
+
+An inverse relationship exists.
 
 ### Question 11: Do extra activities help to improve student performance?
 
