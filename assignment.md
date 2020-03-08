@@ -573,13 +573,76 @@ No, there is not much difference between students involved in extra activities a
 
 **Solution 12:**
 
+R Code:
+
+```r
+# finding out if home internet access help improve student performance ------------------
+result.internet <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(internet) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.internet
+View(result.internet)
+
+# Plot of the relation between home internet access and grade with error bars
+result.internet %>%
+  ggplot(aes(x = internet, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = internet,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+```
+
+Output:
+
+![data of relationship between home internet access and success](./Images/result.internet.png)
+
+![histogram of relationship between home internet access and success](./Images/result.internetPlot.png)
+
+Yes, home internet access increases students' performance.
+
 ### Question 13: What is the distribution of students who succeeded over the levels of free time?
 
 **Solution 13:**
 
+R Code:
+
+```r
+# finding out the free time distribution over and success cases
+result.freetime <-
+  data %>%
+  mutate(success = ifelse(G3 >= 10, 1, 0), fail = ifelse(G3 < 10, 1, 0)) %>%
+  group_by(freetime) %>%
+  summarise(success = sum(success), fail = sum(fail)) %>%
+  mutate(successRate = success / (success + fail))
+# View result.freetime
+View(result.freetime)
+# plot result.freetime
+result.freetime %>%
+  ggplot(aes(x = freetime, y = successRate)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5)
+```
+
+Output:
+
+![data of relationship between free time and success](./Images/result.freetime.png)
+
+![distribution of students who succeeded over the levels of free time](./Images/result.freetimePlot.png)
+
 ### Question 14: What is the relationship between age and student result?
 
 **Solution 14:**
+
 
 ### Question 15: What is the relationship between address and student result?
 

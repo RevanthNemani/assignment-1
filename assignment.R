@@ -190,26 +190,67 @@ View(result.failures)
 result.failures %>% 
   ggplot(aes(x = failures, y = successRate)) + geom_bar(stat = "identity")
 
-# finding out the relationship between travel time and grade ------------------
-result.traveltime <- data %>%
+# finding out if extra activities help improve student performance ------------------
+result.activities <- data %>%
   mutate(sdG3 = G3) %>%
-  group_by(traveltime) %>%
+  group_by(activities) %>%
   summarise(G3 = mean(G3), sdG3 = sd(sdG3))
 
-# View result.traveltime
-View(result.traveltime)
+# View result.activities
+View(result.activities)
 
-# Plot of the relation between travel time and grade with error bars
-result.traveltime %>%
-  ggplot(aes(x = traveltime, y = G3)) +
+# Plot of the relation between extra activities and grade with error bars
+result.activities %>%
+  ggplot(aes(x = activities, y = G3)) +
   geom_bar(stat = "identity",
            fill = "skyblue",
            alpha = 0.5) +
   geom_pointrange(aes(
-    x = traveltime,
+    x = activities,
     y = G3,
     ymin = G3 - sdG3,
     ymax = G3 + sdG3,
     colour = "orange"
   )) +
   theme(legend.position = "none")
+
+
+# finding out if home internet access help improve student performance ------------------
+result.internet <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(internet) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.internet
+View(result.internet)
+
+# Plot of the relation between home internet access and grade with error bars
+result.internet %>%
+  ggplot(aes(x = internet, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = internet,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+
+# finding out the free time distribution over and success cases ---------------------
+result.freetime <-
+  data %>%
+  mutate(success = ifelse(G3 >= 10, 1, 0), fail = ifelse(G3 < 10, 1, 0)) %>%
+  group_by(freetime) %>%
+  summarise(success = sum(success), fail = sum(fail)) %>%
+  mutate(successRate = success / (success + fail))
+# View result.freetime
+View(result.freetime)
+# plot result.freetime
+result.freetime %>%
+  ggplot(aes(x = freetime, y = successRate)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5)
