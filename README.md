@@ -60,11 +60,27 @@
 
 1. Find out what makes the students performance higher.
 2. Predict students' performance
-3. Increase students' performance
 
 ### Question 2: What are the algorithms that could be used to solve each problem?
 
 **Solution 2:**
+
+Both problems could be solved with the following algorithms, but not limited to:
+
+Using Clustering:
+
+1. K-means
+2. Mean-Shift
+3. Expectation–Maximization (EM) Clustering using Gaussian Mixture Models (GMM)
+4. Agglomerative Hierarchical Clustering
+
+Using Classification:
+
+1. Logistic Regression
+2. Naive Bayes classifier
+3. Least squares support vector machines
+4. k-nearest neighbor
+5. Random forests
 
 ## Step 2: Identify data sources and acquire data
 
@@ -518,6 +534,40 @@ An inverse relationship exists.
 ### Question 11: Do extra activities help to improve student performance?
 
 **Solution 11:**
+
+```r
+# finding out if extra activities help improve student performance
+result.activities <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(activities) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.activities
+View(result.activities)
+
+# Plot of the relation between extra activities and grade with error bars
+result.activities %>%
+  ggplot(aes(x = activities, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = activities,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+```
+
+Output:
+
+![data of relationship between family relationship and success](./Images/result.activities.png)
+
+![histogram of relationship between family relationship and success](./Images/result.activitiesPlot.png)
+
+No, there is not much difference between students involved in extra activities and the ones who are not.
 
 ### Question 12: Does internet home access help to improve student performance?
 

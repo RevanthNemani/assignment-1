@@ -189,3 +189,27 @@ View(result.failures)
 # plot result.failures
 result.failures %>% 
   ggplot(aes(x = failures, y = successRate)) + geom_bar(stat = "identity")
+
+# finding out the relationship between travel time and grade ------------------
+result.traveltime <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(traveltime) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.traveltime
+View(result.traveltime)
+
+# Plot of the relation between travel time and grade with error bars
+result.traveltime %>%
+  ggplot(aes(x = traveltime, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = traveltime,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
