@@ -864,7 +864,14 @@ Health doesn't seem to have much impact on grades.
 **Solution 19:**
 
 ```r
+# finding out the relationship between mother, father education/job and student performance
+result.parents <- data[, c(1, 8:11, 32)]
 
+# correlation test mother's education
+cor.test(result.parents$Medu, y = result.parents$G3)
+
+# correlation test father's education
+cor.test(result.parents$Fedu, y = result.parents$G3)
 ```
 
 R console Output:
