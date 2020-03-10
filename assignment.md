@@ -527,9 +527,9 @@ Output:
 ![histogram of relationship between family relationship and success](./Images/result.failuresPlot.png)
 
 Yes, the students with previous failures have a strong proportional effect on results.
-In other words, as the number of times a student failed in the past, the more probability of the student failing in future.
+In other words, as the number of times a student failed in the past increases, the more probability of the student failing in future.
 
-An inverse relationship exists.
+An inverse relationship exists between past failures and future success.
 
 ### Question 11: Do extra activities help to improve student performance?
 
@@ -643,26 +643,330 @@ Output:
 
 **Solution 14:**
 
+R Code:
+
+```r
+# finding out the relationship between age and student performance
+result.age <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(age) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.age
+View(result.age)
+
+# Plot of the relation between home age access and grade with error bars
+result.age %>%
+  ggplot(aes(x = age, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = age,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+```
+Output:
+
+![data of relationship between age and performance](./Images/result.age.png)
+
+![histogram of relationship between age and performance](./Images/result.agePlot.png)
 
 ### Question 15: What is the relationship between address and student result?
 
 **Solution 15:**
 
+R Code:
+
+```r
+# finding out the relationship between address and student performance
+result.address <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(address) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.address
+View(result.address)
+
+# Plot of the relation between home address access and grade with error bars
+result.address %>%
+  ggplot(aes(x = address, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = address,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+```
+
+Output:
+
+![data of relationship between free time and success](./Images/result.address.png)
+
+![distribution of students who succeeded over the levels of free time](./Images/result.addressPlot.png)
+
+The Urban students perform better than the rural students.
+
 ### Question 16: What is the relationship between study time and student result?
 
 **Solution 16:**
+
+R Code:
+
+```r
+# finding out the relationship between studytime and student performance
+result.studytime <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(studytime) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.studytime
+View(result.studytime)
+
+# Plot of the relation between home studytime access and grade with error bars
+result.studytime %>%
+  ggplot(aes(x = studytime, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = studytime,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+```
+
+Output:
+
+![data of relationship between free time and success](./Images/result.studytime.png)
+
+![distribution of students who succeeded over the levels of free time](./Images/result.studytimePlot.png)
+
+There are slight improvements in students' performance with increase in study time.
 
 ### Question 17: Does absence affect student performance?
 
 **Solution 17:**
 
+```r
+# finding out the relationship between absences and student performance
+result.absences <- data
+
+# Plot of the relation between home absences access and grade
+result.absences %>%
+  ggplot(aes(x = absences, y = G3)) +
+  geom_point() +
+  theme(legend.position = "none") +
+  geom_smooth(method='lm', formula= y~x)
+
+# Correaltion test
+cor.test(x = data$absences, y = data$G3)
+```
+Output:
+
+![plot of relationship between absences and grade](./Images/result.absences.png)
+
+R Console Output:
+
+```r
+> # Correaltion test
+> cor.test(x = data$absences, y = data$G3)
+
+	Pearson's product-moment correlation
+
+data:  data$absences and data$G3
+t = 1.3371, df = 367, p-value = 0.182
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.03269765  0.17050681
+sample estimates:
+      cor
+0.0696268
+```
+
+Absences do not effect students' performances as evidenced by scatter of points all over the plot, p-value and very low positive correlation.
+
 ### Question 18: Does health affect student performance?
 
 **Solution 18:**
 
+R Code:
+
+```r
+# finding out the relationship between health and student performance ------------------
+result.health <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(health) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.health
+View(result.health)
+
+# Plot of the relation between home health access and grade with error bars
+result.health %>%
+  ggplot(aes(x = health, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = health,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+
+# Correaltion test
+cor.test(x = data$health, y = data$G3)
+```
+
+Output:
+
+![data of relationship between health and grade](./Images/result.health.png)
+
+![plot of realtionship between health and grade](./Images/result.healthPlot.png)
+
+R Console Output:
+
+```r
+> # Correaltion test
+> cor.test(x = data$health, y = data$G3)
+
+	Pearson's product-moment correlation
+
+data:  data$health and data$G3
+t = -1.1879, df = 367, p-value = 0.2357
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.16295002  0.04046012
+sample estimates:
+        cor
+-0.06188754
+```
+
+Health doesn't seem to have much impact on grades.
+
 ### Question 19: Does mother and father education/job affect student result?
 
 **Solution 19:**
+
+```r
+
+```
+
+R console Output:
+
+```r
+> # correlation test mother's education
+> cor.test(result.parents$Medu, y = result.parents$G3)
+
+	Pearson's product-moment correlation
+
+data:  result.parents$Medu and result.parents$G3
+t = 4.1934, df = 367, p-value = 3.449e-05
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.1142306 0.3091717
+sample estimates:
+      cor
+0.2138289
+
+>
+```
+
+```r
+> # correlation test father's education
+> cor.test(result.parents$Fedu, y = result.parents$G3)
+
+	Pearson's product-moment correlation
+
+data:  result.parents$Fedu and result.parents$G3
+t = 2.5458, df = 367, p-value = 0.01131
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.03004288 0.23072002
+sample estimates:
+      cor
+0.1317309
+```
+
+On the education, there exists a relationship between both father's and Mother's education. Mother's education level is more significant and is directly proprotional to students' performance than Father's education.
+
+R Code:
+
+```r
+# Plot of the relation between father's job  and grade
+result.Fjob <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(Fjob) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.Fjob
+View(result.Fjob)
+
+# Plot of the relation between Fjob  and grade with error bars
+result.Fjob %>%
+  ggplot(aes(x = Fjob, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = Fjob,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+
+# Plot of the relation between mothers' job  and grades
+result.Mjob <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(Mjob) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.Mjob
+View(result.Mjob)
+
+# Plot of the relation between Mothers' job and grades with error bars
+result.Mjob %>%
+  ggplot(aes(x = Mjob, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = Mjob,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+```
+
+Output:
+
+
+![data of relationship between fathers' job and grade](./Images/result.fjob.png)
+
+![plot of realtionship between fathers' job and grade](./Images/result.fjobPlot.png)
+
+![data of relationship between mothers' job and grade](./Images/result.mjob.png)
+
+![plot of realtionship between mothers' job and grade](./Images/result.mjobPlot.png)
 
 ## Step 5: Generate the model
 

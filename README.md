@@ -527,9 +527,9 @@ Output:
 ![histogram of relationship between family relationship and success](./Images/result.failuresPlot.png)
 
 Yes, the students with previous failures have a strong proportional effect on results.
-In other words, as the number of times a student failed in the past, the more probability of the student failing in future.
+In other words, as the number of times a student failed in the past increases, the more probability of the student failing in future.
 
-An inverse relationship exists.
+An inverse relationship exists between past failures and future success.
 
 ### Question 11: Do extra activities help to improve student performance?
 
@@ -643,6 +643,38 @@ Output:
 
 **Solution 14:**
 
+R Code:
+
+```r
+# finding out the relationship between age and student performance
+result.age <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(age) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.age
+View(result.age)
+
+# Plot of the relation between home age access and grade with error bars
+result.age %>%
+  ggplot(aes(x = age, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = age,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+```
+Output:
+
+![data of relationship between age and performance](./Images/result.age.png)
+
+![histogram of relationship between age and performance](./Images/result.agePlot.png)
 
 ### Question 15: What is the relationship between address and student result?
 

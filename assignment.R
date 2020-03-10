@@ -254,3 +254,172 @@ result.freetime %>%
   geom_bar(stat = "identity",
            fill = "skyblue",
            alpha = 0.5)
+
+# finding out the relationship between age and student performance ------------------
+result.age <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(age) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.age
+View(result.age)
+
+# Plot of the relation between home age access and grade with error bars
+result.age %>%
+  ggplot(aes(x = age, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = age,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+# finding out the relationship between address and student performance ------------------
+result.address <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(address) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.address
+View(result.address)
+
+# Plot of the relation between home address access and grade with error bars
+result.address %>%
+  ggplot(aes(x = address, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = address,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+
+# finding out the relationship between studytime and student performance ------------------
+result.studytime <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(studytime) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.studytime
+View(result.studytime)
+
+# Plot of the relation between home studytime access and grade with error bars
+result.studytime %>%
+  ggplot(aes(x = studytime, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = studytime,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+
+# finding out the relationship between absences and student performance ------------------
+result.absences <- data 
+
+# Plot of the relation between home absences access and grade
+result.absences %>%
+  ggplot(aes(x = absences, y = G3)) +
+  geom_point() +
+  theme(legend.position = "none") +
+  geom_smooth(method='lm', formula= y~x)
+
+# Correaltion test
+cor.test(x = data$absences, y = data$G3)
+
+# finding out the relationship between health and student performance ------------------
+result.health <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(health) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.health
+View(result.health)
+
+# Plot of the relation between home health access and grade with error bars
+result.health %>%
+  ggplot(aes(x = health, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = health,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+
+# Correaltion test
+cor.test(x = data$health, y = data$G3)
+
+# finding out the relationship between mother, father education/job and student performance ------------------
+result.parents <- data[, c(1, 8:11, 32)]
+
+# correlation test mother's education
+cor.test(result.parents$Medu, y = result.parents$G3)
+
+# correlation test father's education
+cor.test(result.parents$Fedu, y = result.parents$G3)
+
+# Plot of the relation between father's job  and grade
+result.Fjob <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(Fjob) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.Fjob
+View(result.Fjob)
+
+# Plot of the relation between Fjob  and grade with error bars
+result.Fjob %>%
+  ggplot(aes(x = Fjob, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = Fjob,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+
+# Plot of the relation between mothers' job  and grades
+result.Mjob <- data %>%
+  mutate(sdG3 = G3) %>%
+  group_by(Mjob) %>%
+  summarise(G3 = mean(G3), sdG3 = sd(sdG3))
+
+# View result.Mjob
+View(result.Mjob)
+
+# Plot of the relation between Mothers' job and grades with error bars
+result.Mjob %>%
+  ggplot(aes(x = Mjob, y = G3)) +
+  geom_bar(stat = "identity",
+           fill = "skyblue",
+           alpha = 0.5) +
+  geom_pointrange(aes(
+    x = Mjob,
+    y = G3,
+    ymin = G3 - sdG3,
+    ymax = G3 + sdG3,
+    colour = "orange"
+  )) +
+  theme(legend.position = "none")
+
