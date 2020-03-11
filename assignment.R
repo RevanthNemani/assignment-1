@@ -7,7 +7,7 @@ data <- read.csv("data set.csv")
 
 # counting NAs of each column ----------------------
 
-# We are applying the function of x defined as sum of na counts
+# We are applying the function of x defined as the sum of na counts
 # to each column and returning a matrix of counts of NAs in each column
 sapply(data, function(x) sum(is.na(x)))
 
@@ -19,9 +19,15 @@ require(dplyr)  # loading required library for filter and mutate functions
 
 data.GP <- data %>% filter(school == "GP")  # seperate dataset for GP
 
-# Median value inserted in case of NAs were features are most likely highest occurance
-data.GP$Fedu[is.na(data.GP$Fedu)] <- median(data.GP$Fedu, na.rm = T)  # Median father's education
-data.GP$famrel[is.na(data.GP$famrel)] <- median(data.GP$famrel, na.rm = T)  # Median of family relation
+# Create the mode function.
+getmode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+# mode value inserted in case of NAs were features are most likely highest occurance
+data.GP$Fedu[is.na(data.GP$Fedu)] <- getmode(data.GP$Fedu)  # Mode father's education
+data.GP$famrel[is.na(data.GP$famrel)] <- getmode(data.GP$famrel)  # Mode of family relation
 
 # Mean value inserted in case of NAs where features are most likely the average
 data.GP$traveltime[is.na(data.GP$traveltime)] <- mean(data.GP$traveltime, na.rm = T)  # Mean of Travel time
@@ -30,15 +36,15 @@ data.GP$freetime[is.na(data.GP$freetime)] <- mean(data.GP$freetime, na.rm = T)  
 # Same is being done for MS
 data.MS <- data %>% filter(school == "MS")  # seperate dataset for MS
 
-# Median value inserted in case of NAs were features are most likely highest occurance
-data.MS$Fedu[is.na(data.MS$Fedu)] <- median(data.MS$Fedu, na.rm = T)  # Median father's education
-data.MS$famrel[is.na(data.MS$famrel)] <- median(data.MS$famrel, na.rm = T)  # Median of family relation
+# mode value inserted in case of NAs were features are most likely highest occurance
+data.MS$Fedu[is.na(data.MS$Fedu)] <- getmode(data.MS$Fedu)  # mode father's education
+data.MS$famrel[is.na(data.MS$famrel)] <- getmode(data.MS$famrel)  # mode of family relation
 
 # Mean value inserted in case of NAs where features are most likely the average
 data.MS$traveltime[is.na(data.MS$traveltime)] <- mean(data.MS$traveltime, na.rm = T)  # Mean of Travel time
 data.MS$freetime[is.na(data.MS$freetime)] <- mean(data.MS$freetime, na.rm = T)  # Mean of Free time
 
-# combining the data together to get back to the original data set with a few missing values imputed.
+# combining the data to get back to the original data set with a few missing values imputed.
 data <- rbind(data.GP, data.MS)
 
 # Deleting records with missing values
@@ -162,7 +168,7 @@ result.traveltime <- data %>%
 # View result.traveltime
 View(result.traveltime)
 
-# Plot of the relation between travel time and grade with error bars
+# Plot of the relationship between travel time and grade with error bars
 result.traveltime %>%
   ggplot(aes(x = traveltime, y = G3)) +
   geom_bar(stat = "identity",
@@ -302,7 +308,7 @@ result.address %>%
   )) +
   theme(legend.position = "none")
 
-# finding out the relationship between studytime and student performance ------------------
+# finding out the relationship between study time and student performance ------------------
 result.studytime <- data %>%
   mutate(sdG3 = G3) %>%
   group_by(studytime) %>%
@@ -311,7 +317,7 @@ result.studytime <- data %>%
 # View result.studytime
 View(result.studytime)
 
-# Plot of the relation between home studytime access and grade with error bars
+# Plot of the relation between home study time access and grade with error bars
 result.studytime %>%
   ggplot(aes(x = studytime, y = G3)) +
   geom_bar(stat = "identity",
@@ -375,7 +381,7 @@ cor.test(result.parents$Medu, y = result.parents$G3)
 # correlation test father's education
 cor.test(result.parents$Fedu, y = result.parents$G3)
 
-# Plot of the relation between father's job  and grade
+# Plot of the relation between the father's job and grade
 result.Fjob <- data %>%
   mutate(sdG3 = G3) %>%
   group_by(Fjob) %>%
@@ -384,7 +390,7 @@ result.Fjob <- data %>%
 # View result.Fjob
 View(result.Fjob)
 
-# Plot of the relation between Fjob  and grade with error bars
+# Plot of the relation between Fjob and grade with error bars
 result.Fjob %>%
   ggplot(aes(x = Fjob, y = G3)) +
   geom_bar(stat = "identity",
@@ -399,7 +405,7 @@ result.Fjob %>%
   )) +
   theme(legend.position = "none")
 
-# Plot of the relation between mothers' job  and grades
+# Plot of the relation between mothers' job and grades
 result.Mjob <- data %>%
   mutate(sdG3 = G3) %>%
   group_by(Mjob) %>%
@@ -422,4 +428,49 @@ result.Mjob %>%
     colour = "orange"
   )) +
   theme(legend.position = "none")
+
+
+# Feature selection
+
+data.fs <- data %>% transmute(X = X,
+                           school = school,
+                           sex = sex,
+                           age = age,
+                           address = address,
+                           famsize = famsize,
+                           Pstatus = Pstatus,
+                           Medu = Medu,
+                           Fedu = Fedu,
+                           Mjob = Mjob,
+                           Fjob =  Fjob,
+                           studytime =  studytime,
+                           traveltime =  traveltime,
+                           failures =  failures,
+                           internet =  internet,
+                           famrel =  famrel,
+                           freetime =  freetime,
+                           goout =  goout,
+                           health =  health,
+                           absences =  absences,
+                           G1 =  G1,
+                           G2 =  G2,
+                           G3 =  G3)
+
+# Label encoding
+  # Feature Famsize
+data.fs$famsize.encoded <- as.numeric(data.fs$famsize)
+  # Feature internet
+data.fs$internet.binary <- ifelse(data.fs$internet == "yes", 1, 0)
+
+# Hot encoding
+columns.to.one.hot.encode <-
+  c("school", "sex", "address", "Pstatus", "Mjob", "Fjob")
+
+for (i in columns.to.one.hot.encode) {
+  x <- unique(data.fs[i])
+  for (uv in levels(x[, 1])) {
+    data.fs[paste(i, uv, sep = ".")] <- ifelse(data.fs[i] == uv, 1, 0)
+  }
+}
+
 
