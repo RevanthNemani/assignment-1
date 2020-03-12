@@ -1479,6 +1479,28 @@ Output:
 
 ![optimum K](./Images/opti.kPlot.png)
 
+```r
+# trying k-means clustering with k = 2 ---------------
+data.train.p1.3 <- data.final.scaled[, c(2:12, 15:16, 21:34)]
+cluster <- kmeans(x = data.train.p1.3, centers = 2)
+clusplot(x = data.train.p1.3, cluster$cluster, cex=1.0)
+
+# within-cluster sum of square -------------------
+(cluster$betweenss/cluster$totss) * 100
+```
+
+Output:
+
+![cluster plot with k = 2](./Images/opti.kPlot.png)
+
+R Console Output:
+
+```r
+> # within-cluster sum of square -------------------
+> (cluster$betweenss/cluster$totss) * 100
+[1] 7.799093
+```
+
 ### part 2
 
 > features: age, address, famsize, Pstatus, Medu, Fedu, Mjob, Fjob, studytime, traveltime, studytime, failures, internet, famrel, freetime, goout, health, absences,G1, G2, G3, Cluster. Where Cluster is the target feature.
