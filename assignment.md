@@ -1491,7 +1491,7 @@ clusplot(x = data.train.p1.3, cluster$cluster, cex=1.0)
 
 Output:
 
-![cluster plot with k = 2](./Images/opti.kPlot.png)
+![cluster plot with k = 2](./Images/part1.3.2Plot.png)
 
 R Console Output:
 
