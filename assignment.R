@@ -431,7 +431,6 @@ result.Mjob %>%
 
 
 # Feature selection
-
 data.fs <- data %>% transmute(X = X,
                            school = school,
                            sex = sex,
@@ -456,6 +455,7 @@ data.fs <- data %>% transmute(X = X,
                            G2 =  G2,
                            G3 =  G3)
 
+# Feature Engineering
 # Label encoding
   # Feature Famsize
 data.fs$famsize.encoded <- as.numeric(data.fs$famsize)
@@ -469,8 +469,169 @@ columns.to.one.hot.encode <-
 for (i in columns.to.one.hot.encode) {
   x <- unique(data.fs[i])
   for (uv in levels(x[, 1])) {
-    data.fs[paste(i, uv, sep = ".")] <- ifelse(data.fs[i] == uv, 1, 0)
+    data.fs[paste(i, uv, sep = ".")] <- ifelse(data.fs[i][, 1] == uv, 1, 0)
   }
 }
 
+# data.fs summary
+str(data.fs)
 
+# Feature selected and engineered data set
+data.final <- data.fs[, c(1, 4, 8, 9, 12:14, 16:43)]
+
+# data.final summary
+str(data.final)
+
+
+# normalizing data
+data.final.scaled <- data.final [, c(1:14, 16:35, 15)]
+
+data.final.scaled[, c(2:34)] <- sapply(data.final.scaled[, c(2:34)], scale)
+
+cor.matrix.data.final.scaled <- round(cor(data.final.scaled[, 2:35]), 3)
+
+
+# Corellation matrix (plot)------------------------------------
+# Get upper triangle of the correlation matrix
+get_upper_tri <- function(cormat){
+  cormat[lower.tri(cormat)]<- NA
+  return(cormat)
+}
+reorder_cormat <- function(cormat){
+  # Use correlation between variables as distance
+  dd <- as.dist((1-cormat)/2)
+  hc <- hclust(dd)
+  cormat <-cormat[hc$order, hc$order]
+}
+# Reorder Correlation Matrix
+cor.matrix.data.final.scaled <- reorder_cormat(cor.matrix.data.final.scaled)
+upper_tri <- get_upper_tri(cor.matrix.data.final.scaled)
+
+# Melt the correlation matrix
+library(reshape2)
+melted_cormat <- melt(upper_tri, na.rm = TRUE)
+# Heatmap
+library(ggplot2)
+ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value))+
+  geom_tile(color = "white")+
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                       midpoint = 0, limit = c(-1,1), space = "Lab", 
+                       name="Pearson\nCorrelation") +
+  theme_minimal()+ # minimal theme
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, 
+                                   size = 12, hjust = 1))+
+  coord_fixed() +
+  geom_text(aes(Var2, Var1, label = value), color = "black", size = 4) +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank(),
+    axis.ticks = element_blank(),
+    legend.justification = c(1, 0),
+    legend.position = c(0.6, 0.7),
+    legend.direction = "horizontal")+
+  guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
+                               title.position = "top", title.hjust = 0.5))
+
+# ------------------
+set.seed(123)
+data.select <- sample(1:nrow(data.final.scaled), size = nrow(data.final.scaled) * 0.7, replace = F)
+
+data.train <- data.final.scaled[data.select, ]
+data.test <- data.final.scaled[-data.select, ]
+
+
+
+require(cluster)
+
+# Part 1.1 ----------------
+
+data.train.p1.1 <- data.select[, c(2:5, 12, 19:35)]
+
+km <-  kmeans(for_clust_data, 5, nstart=100)
+
+kclusts <- data.frame(k=1:9) %>% group_by(k) %>% do(kclust=kmeans(for_clust_data, .$k))
+clusters <- kclusts %>% group_by(k) %>% do(tidy(.$kclust[[1]]))
+assignments <- kclusts %>% group_by(k) %>% do(augment(.$kclust[[1]], for_clust_data))
+clusterings <- kclusts %>% group_by(k) %>% do(glance(.$kclust[[1]]))
+
+
+# Plot results
+plot(for_clust_data, col =(km1$cluster +1) , main="K-Means result with 5 clusters", pch=20, cex=2)
+
+
+cluster <- kmeans(x = data.train.p1.1, centers = 7)
+
+clusplot(x = data.train.p1.1, cluster$cluster)
+
+
+# within-cluster sum of square -------------------
+(cluster$betweenss/cluster$totss) * 100
+
+require("flexclust")
+
+km <- kcca(data.train.p1.1, k=7, kccaFamily("kmeans"))
+
+pred <- predict(km, data.test.p1.1, k = 7, kccaFamily("kmeans"))
+
+# --------------
+
+kmean_withinss <- function(k) {
+  cluster <- kmeans(data.train.p1.1, k)
+  return (cluster$tot.withinss)
+}
+
+kmean_withinss(7)
+
+# Set maximum cluster 
+max_k <-30 
+# Run algorithm over a range of k 
+wss <- sapply(2:max_k, kmean_withinss)
+
+# Create a data frame to plot the graph
+elbow <-data.frame(2:max_k, wss)
+
+# Plot the graph with gglop
+ggplot(elbow, aes(x = X2.max_k, y = wss)) +
+  geom_point() +
+  geom_line() +
+  scale_x_continuous(breaks = seq(1, 20, by = 1))
+
+
+# Part1.2 ------------
+
+
+data.train.p1.2 <- data.train[, c(2, 6, 9, 7, 12, 21, 22, 30:34)]
+data.test.p1.2 <- data.test[, c(2, 6, 9, 7, 12, 21, 22, 30:34)]
+
+cluster <- kmeans(x = data.train.p1.2, centers = 7)
+
+plot(cluster$cluster)
+
+
+clusplot(x = data.train.p1.2, cluster$cluster, cex=1.0)
+
+
+# Part 1.3 ----------------------
+
+
+data.train.p1.3 <- data.train[, c(2:12, 15:16, 21:34)]
+data.test.p1.3 <- data.test[, c(2:12, 15:16, 21:34)]
+
+cluster <- kmeans(x = data.train.p1.3, centers = 7)
+
+plot(cluster$cluster)
+
+require(cluster)
+
+clusplot(x = data.train.p1.3, cluster$cluster, cex=1.0)
+
+
+
+
+
+require(rgl)
+
+plot3d(data.train.p1.2)

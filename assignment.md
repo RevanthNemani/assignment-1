@@ -1344,10 +1344,34 @@ Output:
 
 **Solution 23:**
 
+```r
+# Part 1.1
+data.train.p1.1 <- data.final.scaled[, c(2:5, 12, 19:34)]
+cluster <- kmeans(x = data.train.p1.1, centers = 7)
+clusplot(x = data.train.p1.1, cluster$cluster)
+```
+
+Output:
+
+![cluster Plot](./Images/part1.1plot.png)
 
 ### Question 24: Calculate the within-cluster variation.
 
 **Solution 24:**
+
+R code:
+
+```r
+# within-cluster sum of square
+(cluster$betweenss/cluster$totss) * 100  # in percentage
+```
+
+Output:
+
+```r
+> (cluster$betweenss/cluster$totss) * 100  # in percentage
+[1] 32.76622
+```
 
 > For features: age, address, Fjob, traveltime, studytime, failures, and absences.
 
@@ -1355,9 +1379,32 @@ Output:
 
 **Solution 25:**
 
+```r
+# Part 1.2
+data.train.p1.2 <- data.final.scaled[, c(2, 6, 9, 7, 12, 21, 22, 30:34)]
+cluster <- kmeans(x = data.train.p1.2, centers = 7)
+clusplot(x = data.train.p1.2, cluster$cluster, cex=1.0)
+```
+
+Output:
+
+![cluster Plot](./Images/part1.2plot.png)
+
 ### Question 26: Calculate the within-cluster variation.
 
 **Solution 26:**
+
+```r
+# within-cluster sum of square
+(cluster$betweenss/cluster$totss) * 100  # in percentage
+```
+
+Output:
+
+```r
+> (cluster$betweenss/cluster$totss) * 100  # in percentage
+[1] 41.2325
+```
 
 > For features: age, address, famsize, Pstatus, Medu, Fedu, Mjob, Fjob,studytime, traveltime ,failures, internet, famrel, freetime, goout,health, absences.
 
@@ -1365,17 +1412,72 @@ Output:
 
 **Solution 27:**
 
+```r
+# Part 1.3
+data.train.p1.3 <- data.final.scaled[, c(2:12, 15:16, 21:34)]
+cluster <- kmeans(x = data.train.p1.3, centers = 7)
+clusplot(x = data.train.p1.3, cluster$cluster, cex=1.0)
+```
+
+Output:
+
+![cluster Plot](./Images/part1.3plot.png)
+
 ### Question 28: Calculate the within-cluster variation.
 
 **Solution 28:**
+
+```r
+# within-cluster sum of square
+(cluster$betweenss/cluster$totss) * 100  # in percentage
+```
+
+Output:
+
+```r
+> (cluster$betweenss/cluster$totss) * 100  # in percentage
+[1] 27.28643
+```
 
 ### Question 29: Is this clustering better or worse than the previous ones? Explain your answer.
 
 **Solution 29:**
 
+Yes the last cluster is better than the previous clusters because it has lower value of within-cluster variation.
+
 ### Question 30: Find the appropriate number of clusters (k) for the student performance data.
 
 **Solution 30:**
+
+```r
+# Average silhouette for different values of K
+# function to compute average silhouette for k clusters
+avg_sil <- function(k) {
+  km.res <- kmeans(data.train.p1.3, centers = k, nstart = 25)
+  ss <- silhouette(km.res$cluster, dist(data.train.p1.3))
+  mean(ss[, 3])
+}
+# Compute and plot wss for k = 2 to k = 30
+k.values <- 2:30
+# extract avg silhouette for 2-30 clusters
+avg_sil_values <- purrr::map_dbl(k.values, avg_sil)
+
+plot(k.values, avg_sil_values,
+     type = "b", pch = 19, frame = FALSE, 
+     xlab = "Number of clusters K",
+     ylab = "Average Silhouettes")
+
+require(factoextra)  # Loading required library
+# Ploting optimal number of K
+fviz_nbclust(data.train.p1.3, kmeans, method = "silhouette")
+```
+
+Output:
+
+![Average silhouette for different values of K](./Images/agvSil.png)
+
+
+![optimum K](./Images/opti.kPlot.png)
 
 ### part 2
 
