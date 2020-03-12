@@ -1388,7 +1388,7 @@ clusplot(x = data.train.p1.2, cluster$cluster, cex=1.0)
 
 Output:
 
-![cluster Plot](./Images/part1.2plot.png)
+![cluster Plot 2](./Images/part1.2plot.png)
 
 ### Question 26: Calculate the within-cluster variation.
 
@@ -1421,7 +1421,7 @@ clusplot(x = data.train.p1.3, cluster$cluster, cex=1.0)
 
 Output:
 
-![cluster Plot](./Images/part1.3plot.png)
+![cluster Plot 3](./Images/part1.3plot.png)
 
 ### Question 28: Calculate the within-cluster variation.
 
