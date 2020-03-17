@@ -1,3 +1,8 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
 # Student Performance Case Study (Clustering/Classification)
 
 - [Student Performance Case Study (Clustering/Classification)](#student-performance-case-study-clusteringclassification)
@@ -1513,27 +1518,44 @@ R Code:
 
 ```r
 # Part 2 -----------------
-data.train.p2 <- data.train[, c(2:16, 21:35)]
-data.test.p2 <- data.test[, c(2:16, 21:35)]
+# Adding the predicted cluster to each student
+data.final.scaled$cluster <- cluster$cluster
+# normalising G3 Column as it is now an input
+data.final.scaled$G3 <- scale(data.final.scaled$G3)
+# spliting the dataset to training and testing sets
+set.seed(123)
+data.select <- sample(1:nrow(data.final.scaled), size = nrow(data.final.scaled) * 0.7, replace = F)
+
+data.train <- data.final.scaled[data.select, ]
+data.test <- data.final.scaled[-data.select, ]
+
+# feature selection
+data.train.p2 <- data.train[, c(2:16, 21:36)]
+data.test.p2 <- data.test[, c(2:16, 21:36)]
+
+# data formating
+data.train.p2[, -31] <- as.data.frame(sapply(data.train.p2[, -31], as.numeric))
+data.test.p2[, -31] <- as.data.frame(sapply(data.test.p2[, -31], as.numeric))
+data.train.p2$cluster <- as.factor(data.train.p2$cluster)
+data.test.p2$cluster <- as.factor(data.test.p2$cluster)
 
 require(class)
-knn.29 <- knn(train = data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k = 29)
+knn.7 <- knn(train = data.train.p2[, -31], test = data.test.p2[, -31], cl = data.train.p2[, 31], k = 7)
+```
+
+R Code:
+
+```r
 # Accuracy in %
-100 * sum(data.test.p2[, 30] == knn.29)/NROW(data.test.p2[, 30])
+100 * sum(data.test.p2[, 31] == knn.7)/NROW(data.test.p2[, 31])
 ```
 
 R Console Output:
 
 ```r
-> # Part 2 -----------------
-> data.train.p2 <- data.train[, c(2:16, 21:35)]
-> data.test.p2 <- data.test[, c(2:16, 21:35)]
->
-> require(class)
-> knn.29 <- knn(train = data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k = 29)
 > # Accuracy in %
-> 100 * sum(data.test.p2[, 30] == knn.29)/NROW(data.test.p2[, 30])
-[1] 18.91892
+> 100 * sum(data.test.p2[, 31] == knn.7)/NROW(data.test.p2[, 31])
+[1] 92.79279
 ```
 
 ### Question 32: Assess the performance of the model for different values of K (number of neighbors) using confusion-matrix and accuracy.
@@ -1543,11 +1565,17 @@ R Console Output:
 R Code:
 
 ```r
+require(caret)
+# taking a union of all levels in test and training data set
+u <- union(data.train.p2$cluster, data.train.p2$cluster)
+t <- table(factor(knn.7, u), factor(data.test.p2$cluster, u))
+confusionMatrix(t)
+
 i=1
 k.optm=1
 for (i in 1:30){
-  knn.mod <- knn(data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k=i)
-  k.optm[i] <- 100 * sum(data.test.p2[, 30] == knn.mod)/NROW(data.test.p2[, 30])
+  knn.mod <- knn(data.train.p2[, -31], test = data.test.p2[, -31], cl = data.train.p2[, 31], k=i)
+  k.optm[i] <- 100 * sum(data.test.p2[, 31] == knn.mod)/NROW(data.test.p2[, 31])
   k=i
   cat(k,'=',k.optm[i],'
       ')
@@ -1563,42 +1591,42 @@ R Console Output:
 > i=1
 > k.optm=1
 > for (i in 1:30){
-+   knn.mod <- knn(data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k=i)
-+   k.optm[i] <- 100 * sum(data.test.p2[, 30] == knn.mod)/NROW(data.test.p2[, 30])
++   knn.mod <- knn(data.train.p2[, -31], test = data.test.p2[, -31], cl = data.train.p2[, 31], k=i)
++   k.optm[i] <- 100 * sum(data.test.p2[, 31] == knn.mod)/NROW(data.test.p2[, 31])
 +   k=i
 +   cat(k,'=',k.optm[i],'
 +       ')
 + }
-1 = 12.61261
-      2 = 9.90991
-      3 = 13.51351
-      4 = 9.90991
-      5 = 9.90991
-      6 = 13.51351
-      7 = 17.11712
-      8 = 17.11712
-      9 = 15.31532
-      10 = 15.31532
-      11 = 14.41441
-      12 = 15.31532
-      13 = 10.81081
-      14 = 12.61261
-      15 = 15.31532
-      16 = 11.71171
-      17 = 15.31532
-      18 = 13.51351
-      19 = 15.31532
-      20 = 16.21622
-      21 = 14.41441
-      22 = 12.61261
-      23 = 13.51351
-      24 = 14.41441
-      25 = 11.71171
-      26 = 15.31532
-      27 = 16.21622
-      28 = 14.41441
-      29 = 18.01802
-      30 = 18.01802
+1 = 88.28829
+      2 = 87.38739
+      3 = 90.09009
+      4 = 89.18919
+      5 = 92.79279
+      6 = 92.79279
+      7 = 92.79279
+      8 = 89.18919
+      9 = 92.79279
+      10 = 91.89189
+      11 = 93.69369
+      12 = 90.99099
+      13 = 91.89189
+      14 = 90.99099
+      15 = 90.99099
+      16 = 90.09009
+      17 = 90.09009
+      18 = 89.18919
+      19 = 90.09009
+      20 = 90.99099
+      21 = 90.99099
+      22 = 90.09009
+      23 = 90.99099
+      24 = 90.99099
+      25 = 90.99099
+      26 = 89.18919
+      27 = 90.99099
+      28 = 89.18919
+      29 = 90.09009
+      30 = 89.18919
       >
 > #Accuracy plot
 > plot(k.optm, type="b", xlab="K- Value",ylab="Accuracy level")
@@ -1611,84 +1639,56 @@ Output:
 Confusion Matrix:
 
 ```r
-# k = 29
-knn.29 <- knn(train = data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k = 29)
+# k = 11
+knn.11 <- knn(train = data.train.p2[, -31], test = data.test.p2[, -31], cl = data.train.p2[, 31], k = 11)
 # Accuracy in %
-100 * sum(data.test.p2[, 30] == knn.29)/NROW(data.test.p2[, 30])
+100 * sum(data.test.p2[, 31] == knn.11)/NROW(data.test.p2[, 31])
 require(caret)
 # taking a union of all levels in test and training data set
-u <- union(data.train.p2$G3, data.train.p2$G3)
-t <- table(factor(knn.29, u), factor(data.test.p2$G3, u))
+u <- union(data.train.p2$cluster, data.train.p2$cluster)
+t <- table(factor(knn.11, u), factor(data.test.p2$cluster, u))
 confusionMatrix(t)
 ```
 
 R Console Output:
 
 ```r
-> # k = 29
-> knn.29 <- knn(train = data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k = 29)
+> # k = 11
+> knn.11 <- knn(train = data.train.p2[, -31], test = data.test.p2[, -31], cl = data.train.p2[, 31], k = 11)
 > # Accuracy in %
-> 100 * sum(data.test.p2[, 30] == knn.29)/NROW(data.test.p2[, 30])
-[1] 19.81982
+> 100 * sum(data.test.p2[, 31] == knn.11)/NROW(data.test.p2[, 31])
+[1] 93.69369
 > require(caret)
 > # taking a union of all levels in test and training data set
-> u <- union(data.train.p2$G3, data.train.p2$G3)
-> t <- table(factor(knn.29, u), factor(data.test.p2$G3, u))
+> u <- union(data.train.p2$cluster, data.train.p2$cluster)
+> t <- table(factor(knn.11, u), factor(data.test.p2$cluster, u))
 > confusionMatrix(t)
 Confusion Matrix and Statistics
 
 
-     15 16 14 8 13 11 5 9 0 10 12 6 18 4 7 19 17 20
-  15  0  3  1 0  0  2 0 0 0  0  0 0  2 0 0  0  1  0
-  16  0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
-  14  2  1  3 0  0  2 0 0 0  0  0 0  1 0 0  0  0  0
-  8   0  0  0 1  0  0 0 1 0  1  0 0  0 0 0  0  0  0
-  13  2  0  0 0  0  0 0 0 0  1  2 0  0 0 0  0  0  0
-  11  3  1  2 0  2  4 0 1 2  1  1 2  1 0 0  1  1  0
-  5   0  0  0 0  0  0 0 0 0  0  0 0  0 0 1  0  0  0
-  9   0  0  0 1  0  1 0 1 0  0  0 0  0 0 0  0  0  0
-  0   0  0  0 0  0  0 0 0 3  0  0 0  0 0 0  0  0  0
-  10  2  0  4 3  6  2 1 3 5  9  4 3  0 0 1  0  0  0
-  12  3  0  0 0  2  1 1 0 1  2  1 0  1 0 0  0  1  0
-  6   0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
-  18  0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
-  4   0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
-  7   0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
-  19  0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
-  17  0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
-  20  0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
+     2  1
+  2 52  1
+  1  6 52
 
-Overall Statistics
+               Accuracy : 0.9369
+                 95% CI : (0.8744, 0.9743)
+    No Information Rate : 0.5225
+    P-Value [Acc > NIR] : <2e-16
 
-               Accuracy : 0.1982
-                 95% CI : (0.1286, 0.2846)
-    No Information Rate : 0.1261
-    P-Value [Acc > NIR] : 0.02054
+                  Kappa : 0.8741
 
-                  Kappa : 0.1048
+ Mcnemar's Test P-Value : 0.1306
 
- Mcnemar's Test P-Value : NA
+            Sensitivity : 0.8966
+            Specificity : 0.9811
+         Pos Pred Value : 0.9811
+         Neg Pred Value : 0.8966
+             Prevalence : 0.5225
+         Detection Rate : 0.4685
+   Detection Prevalence : 0.4775
+      Balanced Accuracy : 0.9388
 
-Statistics by Class:
-
-                     Class: 15 Class: 16 Class: 14 Class: 8 Class: 13 Class: 11 Class: 5 Class: 9 Class: 0 Class: 10 Class: 12 Class: 6 Class: 18 Class: 4
-Sensitivity            0.00000   0.00000   0.30000 0.200000   0.00000   0.33333 0.000000 0.166667  0.27273   0.64286  0.125000  0.00000   0.00000       NA
-Specificity            0.90909   1.00000   0.94059 0.981132   0.95050   0.81818 0.990826 0.980952  1.00000   0.64948  0.883495  1.00000   1.00000        1
-Pos Pred Value         0.00000       NaN   0.33333 0.333333   0.00000   0.18182 0.000000 0.333333  1.00000   0.20930  0.076923      NaN       NaN       NA
-Neg Pred Value         0.88235   0.95495   0.93137 0.962963   0.90566   0.91011 0.981818 0.953704  0.92593   0.92647  0.928571  0.95495   0.95495       NA
-Prevalence             0.10811   0.04505   0.09009 0.045045   0.09009   0.10811 0.018018 0.054054  0.09910   0.12613  0.072072  0.04505   0.04505        0
-Detection Rate         0.00000   0.00000   0.02703 0.009009   0.00000   0.03604 0.000000 0.009009  0.02703   0.08108  0.009009  0.00000   0.00000        0
-Detection Prevalence   0.08108   0.00000   0.08108 0.027027   0.04505   0.19820 0.009009 0.027027  0.02703   0.38739  0.117117  0.00000   0.00000        0
-Balanced Accuracy      0.45455   0.50000   0.62030 0.590566   0.47525   0.57576 0.495413 0.573810  0.63636   0.64617  0.504248  0.50000   0.50000       NA
-                     Class: 7 Class: 19 Class: 17 Class: 20
-Sensitivity           0.00000  0.000000   0.00000        NA
-Specificity           1.00000  1.000000   1.00000         1
-Pos Pred Value            NaN       NaN       NaN        NA
-Neg Pred Value        0.98198  0.990991   0.97297        NA
-Prevalence            0.01802  0.009009   0.02703         0
-Detection Rate        0.00000  0.000000   0.00000         0
-Detection Prevalence  0.00000  0.000000   0.00000         0
-Balanced Accuracy     0.50000  0.500000   0.50000        NA
+       'Positive' Class : 2
 ```
 
 ### Question 33: Find the best value of K.
@@ -1698,11 +1698,17 @@ Balanced Accuracy     0.50000  0.500000   0.50000        NA
 R Code:
 
 ```r
+require(caret)
+# taking a union of all levels in test and training data set
+u <- union(data.train.p2$cluster, data.train.p2$cluster)
+t <- table(factor(knn.7, u), factor(data.test.p2$cluster, u))
+confusionMatrix(t)
+
 i=1
 k.optm=1
 for (i in 1:30){
-  knn.mod <- knn(data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k=i)
-  k.optm[i] <- 100 * sum(data.test.p2[, 30] == knn.mod)/NROW(data.test.p2[, 30])
+  knn.mod <- knn(data.train.p2[, -31], test = data.test.p2[, -31], cl = data.train.p2[, 31], k=i)
+  k.optm[i] <- 100 * sum(data.test.p2[, 31] == knn.mod)/NROW(data.test.p2[, 31])
   k=i
   cat(k,'=',k.optm[i],'
       ')
@@ -1718,42 +1724,42 @@ R Console Output:
 > i=1
 > k.optm=1
 > for (i in 1:30){
-+   knn.mod <- knn(data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k=i)
-+   k.optm[i] <- 100 * sum(data.test.p2[, 30] == knn.mod)/NROW(data.test.p2[, 30])
++   knn.mod <- knn(data.train.p2[, -31], test = data.test.p2[, -31], cl = data.train.p2[, 31], k=i)
++   k.optm[i] <- 100 * sum(data.test.p2[, 31] == knn.mod)/NROW(data.test.p2[, 31])
 +   k=i
 +   cat(k,'=',k.optm[i],'
 +       ')
 + }
-1 = 12.61261
-      2 = 9.90991
-      3 = 13.51351
-      4 = 9.90991
-      5 = 9.90991
-      6 = 13.51351
-      7 = 17.11712
-      8 = 17.11712
-      9 = 15.31532
-      10 = 15.31532
-      11 = 14.41441
-      12 = 15.31532
-      13 = 10.81081
-      14 = 12.61261
-      15 = 15.31532
-      16 = 11.71171
-      17 = 15.31532
-      18 = 13.51351
-      19 = 15.31532
-      20 = 16.21622
-      21 = 14.41441
-      22 = 12.61261
-      23 = 13.51351
-      24 = 14.41441
-      25 = 11.71171
-      26 = 15.31532
-      27 = 16.21622
-      28 = 14.41441
-      29 = 18.01802
-      30 = 18.01802
+1 = 88.28829
+      2 = 87.38739
+      3 = 90.09009
+      4 = 89.18919
+      5 = 92.79279
+      6 = 92.79279
+      7 = 92.79279
+      8 = 89.18919
+      9 = 92.79279
+      10 = 91.89189
+      11 = 93.69369
+      12 = 90.99099
+      13 = 91.89189
+      14 = 90.99099
+      15 = 90.99099
+      16 = 90.09009
+      17 = 90.09009
+      18 = 89.18919
+      19 = 90.09009
+      20 = 90.99099
+      21 = 90.99099
+      22 = 90.09009
+      23 = 90.99099
+      24 = 90.99099
+      25 = 90.99099
+      26 = 89.18919
+      27 = 90.99099
+      28 = 89.18919
+      29 = 90.09009
+      30 = 89.18919
       >
 > #Accuracy plot
 > plot(k.optm, type="b", xlab="K- Value",ylab="Accuracy level")
@@ -1763,7 +1769,7 @@ Output:
 
 ![Accuracy plot for k between 1-30](Images/accuracy.png)
 
-Best K Value = 29
+Best K Value = 11
 
 ### Question 34: Do the classification using SVM algorithm.
 

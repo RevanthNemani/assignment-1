@@ -615,26 +615,62 @@ clusplot(x = data.train.p1.3, cluster$cluster, cex=1.0)
 
 
 # Part 2 -----------------
-data.train.p2 <- data.train[, c(2:16, 21:35)]
-data.test.p2 <- data.test[, c(2:16, 21:35)]
+# KNN
+# Adding the predicted cluster to each student
+data.final.scaled$cluster <- cluster$cluster
+# normalising G3 Column as it is now a input
+data.final.scaled$G3 <- scale(data.final.scaled$G3)
+# spliting the dataset to training and testing sets
+set.seed(123)
+data.select <- sample(1:nrow(data.final.scaled), size = nrow(data.final.scaled) * 0.7, replace = F)
 
-str(data.train.p2)
+data.train <- data.final.scaled[data.select, ]
+data.test <- data.final.scaled[-data.select, ]
+
+# feature selection
+data.train.p2 <- data.train[, c(2:16, 21:36)]
+data.test.p2 <- data.test[, c(2:16, 21:36)]
+
+data.train.p2[, -31] <- as.data.frame(sapply(data.train.p2[, -31], as.numeric))
+data.test.p2[, -31] <- as.data.frame(sapply(data.test.p2[, -31], as.numeric))
+
+data.train.p2$cluster <- as.factor(data.train.p2$cluster)
+data.test.p2$cluster <- as.factor(data.test.p2$cluster)
 
 require(class)
-knn.29 <- knn(train = data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k = 29)
+knn.7 <- knn(train = data.train.p2[, -31], test = data.test.p2[, -31], cl = data.train.p2[, 31], k = 7)
 # Accuracy in %
-100 * sum(data.test.p2[, 30] == knn.29)/NROW(data.test.p2[, 30])
+100 * sum(data.test.p2[, 31] == knn.7)/NROW(data.test.p2[, 31])
 require(caret)
 # taking a union of all levels in test and training data set
-u <- union(data.train.p2$G3, data.train.p2$G3)
-t <- table(factor(knn.29, u), factor(data.test.p2$G3, u))
+u <- union(data.train.p2$cluster, data.train.p2$cluster)
+t <- table(factor(knn.7, u), factor(data.test.p2$cluster, u))
 confusionMatrix(t)
 
-require(sjPlot)
-sjc.elbo
+i=1
+k.optm=1
+for (i in 1:30){
+  knn.mod <- knn(data.train.p2[, -31], test = data.test.p2[, -31], cl = data.train.p2[, 31], k=i)
+  k.optm[i] <- 100 * sum(data.test.p2[, 31] == knn.mod)/NROW(data.test.p2[, 31])
+  k=i
+  cat(k,'=',k.optm[i],'
+      ')
+}
+
+#Accuracy plot
+plot(k.optm, type="b", xlab="K- Value",ylab="Accuracy level")
+
+# k = 11
+knn.11 <- knn(train = data.train.p2[, -31], test = data.test.p2[, -31], cl = data.train.p2[, 31], k = 11)
+# Accuracy in %
+100 * sum(data.test.p2[, 31] == knn.11)/NROW(data.test.p2[, 31])
+require(caret)
+# taking a union of all levels in test and training data set
+u <- union(data.train.p2$cluster, data.train.p2$cluster)
+t <- table(factor(knn.11, u), factor(data.test.p2$cluster, u))
+confusionMatrix(t)
 
 
-
-
+# SVM -------------------
 
 
