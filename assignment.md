@@ -1143,18 +1143,18 @@ R Console Output:
 > data.fs$famsize.encoded <- as.numeric(data.fs$famsize)
 >   # Feature internet
 > data.fs$internet.binary <- ifelse(data.fs$internet == "yes", 1, 0)
-> 
+>
 > # Hot encoding
 > columns.to.one.hot.encode <-
 +   c("school", "sex", "address", "Pstatus", "Mjob", "Fjob")
-> 
+>
 > for (i in columns.to.one.hot.encode) {
 +   x <- unique(data.fs[i])
 +   for (uv in levels(x[, 1])) {
 +     data.fs[paste(i, uv, sep = ".")] <- ifelse(data.fs[i][, 1] == uv, 1, 0)
 +   }
 + }
-> 
+>
 > # data.fs summary
 > str(data.fs)
 'data.frame':	369 obs. of  43 variables:
@@ -1201,10 +1201,10 @@ R Console Output:
  $ Fjob.other     : num  0 1 0 1 1 1 0 1 1 0 ...
  $ Fjob.services  : num  0 0 1 0 0 0 0 0 0 0 ...
  $ Fjob.teacher   : num  1 0 0 0 0 0 1 0 0 0 ...
-> 
+>
 > # Feature selected and engineered data set
 > data.final <- data.fs[, c(1, 4, 8, 9, 12:14, 16:43)]
-> 
+>
 > # data.final summary
 > str(data.final)
 'data.frame':	369 obs. of  35 variables:
@@ -1307,11 +1307,11 @@ melted_cormat <- melt(upper_tri, na.rm = TRUE)
 library(ggplot2)
 ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value))+
   geom_tile(color = "white")+
-  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
-                       midpoint = 0, limit = c(-1,1), space = "Lab", 
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white",
+                       midpoint = 0, limit = c(-1,1), space = "Lab",
                        name="Pearson\nCorrelation") +
   theme_minimal()+ # minimal theme
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1,
                                    size = 12, hjust = 1))+
   coord_fixed() +
   geom_text(aes(Var2, Var1, label = value), color = "black", size = 4) +
@@ -1463,7 +1463,7 @@ k.values <- 2:30
 avg_sil_values <- purrr::map_dbl(k.values, avg_sil)
 
 plot(k.values, avg_sil_values,
-     type = "b", pch = 19, frame = FALSE, 
+     type = "b", pch = 19, frame = FALSE,
      xlab = "Number of clusters K",
      ylab = "Average Silhouettes")
 
@@ -1509,13 +1509,261 @@ R Console Output:
 
 **Solution 31:**
 
+R Code:
+
+```r
+# Part 2 -----------------
+data.train.p2 <- data.train[, c(2:16, 21:35)]
+data.test.p2 <- data.test[, c(2:16, 21:35)]
+
+require(class)
+knn.29 <- knn(train = data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k = 29)
+# Accuracy in %
+100 * sum(data.test.p2[, 30] == knn.29)/NROW(data.test.p2[, 30])
+```
+
+R Console Output:
+
+```r
+> # Part 2 -----------------
+> data.train.p2 <- data.train[, c(2:16, 21:35)]
+> data.test.p2 <- data.test[, c(2:16, 21:35)]
+>
+> require(class)
+> knn.29 <- knn(train = data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k = 29)
+> # Accuracy in %
+> 100 * sum(data.test.p2[, 30] == knn.29)/NROW(data.test.p2[, 30])
+[1] 18.91892
+```
+
 ### Question 32: Assess the performance of the model for different values of K (number of neighbors) using confusion-matrix and accuracy.
 
 **Solution 32:**
 
+R Code:
+
+```r
+i=1
+k.optm=1
+for (i in 1:30){
+  knn.mod <- knn(data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k=i)
+  k.optm[i] <- 100 * sum(data.test.p2[, 30] == knn.mod)/NROW(data.test.p2[, 30])
+  k=i
+  cat(k,'=',k.optm[i],'
+      ')
+}
+
+#Accuracy plot
+plot(k.optm, type="b", xlab="K- Value",ylab="Accuracy level")
+```
+
+R Console Output:
+
+```r
+> i=1
+> k.optm=1
+> for (i in 1:30){
++   knn.mod <- knn(data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k=i)
++   k.optm[i] <- 100 * sum(data.test.p2[, 30] == knn.mod)/NROW(data.test.p2[, 30])
++   k=i
++   cat(k,'=',k.optm[i],'
++       ')
++ }
+1 = 12.61261
+      2 = 9.90991
+      3 = 13.51351
+      4 = 9.90991
+      5 = 9.90991
+      6 = 13.51351
+      7 = 17.11712
+      8 = 17.11712
+      9 = 15.31532
+      10 = 15.31532
+      11 = 14.41441
+      12 = 15.31532
+      13 = 10.81081
+      14 = 12.61261
+      15 = 15.31532
+      16 = 11.71171
+      17 = 15.31532
+      18 = 13.51351
+      19 = 15.31532
+      20 = 16.21622
+      21 = 14.41441
+      22 = 12.61261
+      23 = 13.51351
+      24 = 14.41441
+      25 = 11.71171
+      26 = 15.31532
+      27 = 16.21622
+      28 = 14.41441
+      29 = 18.01802
+      30 = 18.01802
+      >
+> #Accuracy plot
+> plot(k.optm, type="b", xlab="K- Value",ylab="Accuracy level")
+```
+
+Output:
+
+![Accuracy for k between 1-30](Images/accuracy.png)
+
+Confusion Matrix:
+
+```r
+# k = 29
+knn.29 <- knn(train = data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k = 29)
+# Accuracy in %
+100 * sum(data.test.p2[, 30] == knn.29)/NROW(data.test.p2[, 30])
+require(caret)
+# taking a union of all levels in test and training data set
+u <- union(data.train.p2$G3, data.train.p2$G3)
+t <- table(factor(knn.29, u), factor(data.test.p2$G3, u))
+confusionMatrix(t)
+```
+
+R Console Output:
+
+```r
+> # k = 29
+> knn.29 <- knn(train = data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k = 29)
+> # Accuracy in %
+> 100 * sum(data.test.p2[, 30] == knn.29)/NROW(data.test.p2[, 30])
+[1] 19.81982
+> require(caret)
+> # taking a union of all levels in test and training data set
+> u <- union(data.train.p2$G3, data.train.p2$G3)
+> t <- table(factor(knn.29, u), factor(data.test.p2$G3, u))
+> confusionMatrix(t)
+Confusion Matrix and Statistics
+
+
+     15 16 14 8 13 11 5 9 0 10 12 6 18 4 7 19 17 20
+  15  0  3  1 0  0  2 0 0 0  0  0 0  2 0 0  0  1  0
+  16  0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
+  14  2  1  3 0  0  2 0 0 0  0  0 0  1 0 0  0  0  0
+  8   0  0  0 1  0  0 0 1 0  1  0 0  0 0 0  0  0  0
+  13  2  0  0 0  0  0 0 0 0  1  2 0  0 0 0  0  0  0
+  11  3  1  2 0  2  4 0 1 2  1  1 2  1 0 0  1  1  0
+  5   0  0  0 0  0  0 0 0 0  0  0 0  0 0 1  0  0  0
+  9   0  0  0 1  0  1 0 1 0  0  0 0  0 0 0  0  0  0
+  0   0  0  0 0  0  0 0 0 3  0  0 0  0 0 0  0  0  0
+  10  2  0  4 3  6  2 1 3 5  9  4 3  0 0 1  0  0  0
+  12  3  0  0 0  2  1 1 0 1  2  1 0  1 0 0  0  1  0
+  6   0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
+  18  0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
+  4   0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
+  7   0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
+  19  0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
+  17  0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
+  20  0  0  0 0  0  0 0 0 0  0  0 0  0 0 0  0  0  0
+
+Overall Statistics
+
+               Accuracy : 0.1982
+                 95% CI : (0.1286, 0.2846)
+    No Information Rate : 0.1261
+    P-Value [Acc > NIR] : 0.02054
+
+                  Kappa : 0.1048
+
+ Mcnemar's Test P-Value : NA
+
+Statistics by Class:
+
+                     Class: 15 Class: 16 Class: 14 Class: 8 Class: 13 Class: 11 Class: 5 Class: 9 Class: 0 Class: 10 Class: 12 Class: 6 Class: 18 Class: 4
+Sensitivity            0.00000   0.00000   0.30000 0.200000   0.00000   0.33333 0.000000 0.166667  0.27273   0.64286  0.125000  0.00000   0.00000       NA
+Specificity            0.90909   1.00000   0.94059 0.981132   0.95050   0.81818 0.990826 0.980952  1.00000   0.64948  0.883495  1.00000   1.00000        1
+Pos Pred Value         0.00000       NaN   0.33333 0.333333   0.00000   0.18182 0.000000 0.333333  1.00000   0.20930  0.076923      NaN       NaN       NA
+Neg Pred Value         0.88235   0.95495   0.93137 0.962963   0.90566   0.91011 0.981818 0.953704  0.92593   0.92647  0.928571  0.95495   0.95495       NA
+Prevalence             0.10811   0.04505   0.09009 0.045045   0.09009   0.10811 0.018018 0.054054  0.09910   0.12613  0.072072  0.04505   0.04505        0
+Detection Rate         0.00000   0.00000   0.02703 0.009009   0.00000   0.03604 0.000000 0.009009  0.02703   0.08108  0.009009  0.00000   0.00000        0
+Detection Prevalence   0.08108   0.00000   0.08108 0.027027   0.04505   0.19820 0.009009 0.027027  0.02703   0.38739  0.117117  0.00000   0.00000        0
+Balanced Accuracy      0.45455   0.50000   0.62030 0.590566   0.47525   0.57576 0.495413 0.573810  0.63636   0.64617  0.504248  0.50000   0.50000       NA
+                     Class: 7 Class: 19 Class: 17 Class: 20
+Sensitivity           0.00000  0.000000   0.00000        NA
+Specificity           1.00000  1.000000   1.00000         1
+Pos Pred Value            NaN       NaN       NaN        NA
+Neg Pred Value        0.98198  0.990991   0.97297        NA
+Prevalence            0.01802  0.009009   0.02703         0
+Detection Rate        0.00000  0.000000   0.00000         0
+Detection Prevalence  0.00000  0.000000   0.00000         0
+Balanced Accuracy     0.50000  0.500000   0.50000        NA
+```
+
 ### Question 33: Find the best value of K.
 
 **Solution 33:**
+
+R Code:
+
+```r
+i=1
+k.optm=1
+for (i in 1:30){
+  knn.mod <- knn(data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k=i)
+  k.optm[i] <- 100 * sum(data.test.p2[, 30] == knn.mod)/NROW(data.test.p2[, 30])
+  k=i
+  cat(k,'=',k.optm[i],'
+      ')
+}
+
+#Accuracy plot
+plot(k.optm, type="b", xlab="K- Value",ylab="Accuracy level")
+```
+
+R Console Output:
+
+```r
+> i=1
+> k.optm=1
+> for (i in 1:30){
++   knn.mod <- knn(data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k=i)
++   k.optm[i] <- 100 * sum(data.test.p2[, 30] == knn.mod)/NROW(data.test.p2[, 30])
++   k=i
++   cat(k,'=',k.optm[i],'
++       ')
++ }
+1 = 12.61261
+      2 = 9.90991
+      3 = 13.51351
+      4 = 9.90991
+      5 = 9.90991
+      6 = 13.51351
+      7 = 17.11712
+      8 = 17.11712
+      9 = 15.31532
+      10 = 15.31532
+      11 = 14.41441
+      12 = 15.31532
+      13 = 10.81081
+      14 = 12.61261
+      15 = 15.31532
+      16 = 11.71171
+      17 = 15.31532
+      18 = 13.51351
+      19 = 15.31532
+      20 = 16.21622
+      21 = 14.41441
+      22 = 12.61261
+      23 = 13.51351
+      24 = 14.41441
+      25 = 11.71171
+      26 = 15.31532
+      27 = 16.21622
+      28 = 14.41441
+      29 = 18.01802
+      30 = 18.01802
+      >
+> #Accuracy plot
+> plot(k.optm, type="b", xlab="K- Value",ylab="Accuracy level")
+```
+
+Output:
+
+![Accuracy plot for k between 1-30](Images/accuracy.png)
+
+Best K Value = 29
 
 ### Question 34: Do the classification using SVM algorithm.
 

@@ -548,19 +548,8 @@ require(cluster)
 
 # Part 1.1 ----------------
 
-data.train.p1.1 <- data.select[, c(2:5, 12, 19:35)]
-
-km <-  kmeans(for_clust_data, 5, nstart=100)
-
-kclusts <- data.frame(k=1:9) %>% group_by(k) %>% do(kclust=kmeans(for_clust_data, .$k))
-clusters <- kclusts %>% group_by(k) %>% do(tidy(.$kclust[[1]]))
-assignments <- kclusts %>% group_by(k) %>% do(augment(.$kclust[[1]], for_clust_data))
-clusterings <- kclusts %>% group_by(k) %>% do(glance(.$kclust[[1]]))
-
-
-# Plot results
-plot(for_clust_data, col =(km1$cluster +1) , main="K-Means result with 5 clusters", pch=20, cex=2)
-
+data.train.p1.1 <- data.final.scaled[, c(2:5, 12, 19:34)]
+#data.test.p1.1 <- data.test[, c(2:5, 12, 19:34)]
 
 cluster <- kmeans(x = data.train.p1.1, centers = 7)
 
@@ -570,68 +559,82 @@ clusplot(x = data.train.p1.1, cluster$cluster)
 # within-cluster sum of square -------------------
 (cluster$betweenss/cluster$totss) * 100
 
-require("flexclust")
-
-km <- kcca(data.train.p1.1, k=7, kccaFamily("kmeans"))
-
-pred <- predict(km, data.test.p1.1, k = 7, kccaFamily("kmeans"))
-
-# --------------
-
-kmean_withinss <- function(k) {
-  cluster <- kmeans(data.train.p1.1, k)
-  return (cluster$tot.withinss)
-}
-
-kmean_withinss(7)
-
-# Set maximum cluster 
-max_k <-30 
-# Run algorithm over a range of k 
-wss <- sapply(2:max_k, kmean_withinss)
-
-# Create a data frame to plot the graph
-elbow <-data.frame(2:max_k, wss)
-
-# Plot the graph with gglop
-ggplot(elbow, aes(x = X2.max_k, y = wss)) +
-  geom_point() +
-  geom_line() +
-  scale_x_continuous(breaks = seq(1, 20, by = 1))
 
 
 # Part1.2 ------------
-
-
-data.train.p1.2 <- data.train[, c(2, 6, 9, 7, 12, 21, 22, 30:34)]
-data.test.p1.2 <- data.test[, c(2, 6, 9, 7, 12, 21, 22, 30:34)]
+data.train.p1.2 <- data.final.scaled[, c(2, 6, 9, 7, 12, 21, 22, 30:34)]
 
 cluster <- kmeans(x = data.train.p1.2, centers = 7)
 
-plot(cluster$cluster)
-
-
 clusplot(x = data.train.p1.2, cluster$cluster, cex=1.0)
+
+# within-cluster sum of square -------------------
+(cluster$betweenss/cluster$totss) * 100
 
 
 # Part 1.3 ----------------------
 
-
-data.train.p1.3 <- data.train[, c(2:12, 15:16, 21:34)]
-data.test.p1.3 <- data.test[, c(2:12, 15:16, 21:34)]
-
+data.train.p1.3 <- data.final.scaled[, c(2:12, 15:16, 21:34)]
 cluster <- kmeans(x = data.train.p1.3, centers = 7)
-
-plot(cluster$cluster)
-
-require(cluster)
-
 clusplot(x = data.train.p1.3, cluster$cluster, cex=1.0)
 
+# within-cluster sum of square -------------------
+(cluster$betweenss/cluster$totss) * 100
+
+
+# Average silhouette for different values of K -------------------
+
+# function to compute average silhouette for k clusters
+avg_sil <- function(k) {
+  km.res <- kmeans(data.train.p1.3, centers = k, nstart = 25)
+  ss <- silhouette(km.res$cluster, dist(data.train.p1.3))
+  mean(ss[, 3])
+}
+
+# Compute and plot wss for k = 2 to k = 30
+k.values <- 2:30
+
+# extract avg silhouette for 2-30 clusters
+avg_sil_values <- purrr::map_dbl(k.values, avg_sil)
+
+plot(k.values, avg_sil_values,
+     type = "b", pch = 19, frame = FALSE, 
+     xlab = "Number of clusters K",
+     ylab = "Average Silhouettes")
+
+require(factoextra)
+fviz_nbclust(data.train.p1.3, kmeans, method = "silhouette")
+
+# trying k-means clustering with k = 2 ---------------
+data.train.p1.3 <- data.final.scaled[, c(2:12, 15:16, 21:34)]
+cluster <- kmeans(x = data.train.p1.3, centers = 2)
+clusplot(x = data.train.p1.3, cluster$cluster, cex=1.0)
+
+# within-cluster sum of square -------------------
+(cluster$betweenss/cluster$totss) * 100
+
+
+# Part 2 -----------------
+data.train.p2 <- data.train[, c(2:16, 21:35)]
+data.test.p2 <- data.test[, c(2:16, 21:35)]
+
+str(data.train.p2)
+
+require(class)
+knn.29 <- knn(train = data.train.p2[, -30], test = data.test.p2[, -30], cl = data.train.p2[, 30], k = 29)
+# Accuracy in %
+100 * sum(data.test.p2[, 30] == knn.29)/NROW(data.test.p2[, 30])
+require(caret)
+# taking a union of all levels in test and training data set
+u <- union(data.train.p2$G3, data.train.p2$G3)
+t <- table(factor(knn.29, u), factor(data.test.p2$G3, u))
+confusionMatrix(t)
+
+require(sjPlot)
+sjc.elbo
 
 
 
 
-require(rgl)
 
-plot3d(data.train.p1.2)
+
